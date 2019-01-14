@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AsbMessages;
 using NServiceBus;
 using NServiceBus.Logging;
 using NServiceBus.Persistence;
@@ -54,15 +55,41 @@ namespace SqlAsbBridge.SqlPublisher
             // Start Service Bus:
             var endpointInstance = await Endpoint.Start(endpointConfiguration).ConfigureAwait(false);
 
-            var random = new Random();
-            var completedEvent = new SqlActionCompletedEvent(random.Next(1000).ToString());
-            await endpointInstance.Publish(completedEvent);
+            Console.Write("Next action (enter to exit): ");
+            var keyInfo = Console.ReadKey();
+            Console.WriteLine();
 
-            var startCommand = new StartSqlActionCommand(random.Next(1000).ToString());
-            await endpointInstance.Send(startCommand);
+            while (keyInfo.Key != ConsoleKey.Enter)
+            {
+                if (keyInfo.Key == ConsoleKey.C) // C = new command
+                {
+                    var random = new Random();
+                    var index = random.Next(1000).ToString();
+                    var startCommand = new StartSqlActionCommand(index);
+                    await endpointInstance.Send(startCommand);
+                    Console.WriteLine($"-> Send StartSqlActionCommand {index}");
+                }
+                else if (keyInfo.Key == ConsoleKey.E) // E = new event
+                {
+                    var random = new Random();
+                    var index = random.Next(1000).ToString();
+                    var completedEvent = new SqlActionCompletedEvent(index);
+                    await endpointInstance.Publish(completedEvent);
+                    Console.WriteLine($"-> Send SqlActionCompletedEvent {index}");
+                }
+                else if (keyInfo.Key == ConsoleKey.A) // A = Azure command
+                {
+                    var random = new Random();
+                    var index = random.Next(1000).ToString();
+                    var startCommand = new StartAzureActionCommand(index);
+                    await endpointInstance.Send(startCommand);
+                    Console.WriteLine($"-> Send StartAzureActionCommand {index}");
+                }
 
-            Console.WriteLine("Press Enter to exit...");
-            Console.ReadLine();
+                Console.Write("Next action (enter to exit): ");
+                keyInfo = Console.ReadKey();
+                Console.WriteLine();
+            }
 
             await endpointInstance.Stop().ConfigureAwait(false);
         }

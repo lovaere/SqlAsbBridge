@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AsbMessages\AsbMessages.csproj" />
     <ProjectReference Include="..\SqlMessages\SqlMessages.csproj" />
   </ItemGroup>
 
