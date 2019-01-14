@@ -42,7 +42,7 @@ namespace SqlAsbBridge.Router
                     transportExtensions.Transactions(TransportTransactionMode.SendsAtomicWithReceive);
                 }
             );
-            sqlInterface.UseSubscriptionPersistence(new SqlSubscriptionStorage(
+            sqlInterface.EnableMessageDrivenPublishSubscribe(new SqlSubscriptionStorage(
                 () => new SqlConnection(Constants.SqlPersistenceConnectionString),
                 null, new SqlDialect.MsSqlServer(), null));
 
